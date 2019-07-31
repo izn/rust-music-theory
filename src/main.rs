@@ -42,9 +42,8 @@ fn scale(root: Note, intervals: [Interval; 7]) -> Vec<String> {
     cycle_iterator.position( |note| note == root );
 
     intervals.iter().map( |&interval| {
-        let interval_value = interval as usize;
         cycle_iterator
-            .nth(interval_value - 1)
+            .nth(interval as usize - 1)
             .unwrap()
             .to_s()
     }).collect()
