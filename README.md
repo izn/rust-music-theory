@@ -1,2 +1,2 @@
 # rust-music-theory
-Trying to learning Rust with Music Theory
+Trying to learn Rust with Music Theory
