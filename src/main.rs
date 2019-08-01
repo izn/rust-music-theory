@@ -2,58 +2,56 @@ extern crate strum;
 #[macro_use] extern crate strum_macros;
 
 use strum::IntoEnumIterator;
+use std::fmt;
 
-#[derive(Copy, Clone)]
-#[allow(dead_code)]
+#[derive(Copy, Clone, Debug)]
 enum Interval {
     Half = 1,
     Whole = 2
 }
 
-#[derive(Clone, EnumIter, PartialEq)]
+#[derive(Copy, Clone, EnumIter, PartialEq)]
 enum Note {
     C, Cs, D, Ds, E, F,
     Fs, G, Gs, A, As, B
 }
 
-impl Note {
-    fn to_s(&self) -> String {
+impl fmt::Display for Note {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Note::C => "C".to_string(),
-            Note::Cs => "C#".to_string(),
-            Note::D => "D".to_string(),
-            Note::Ds => "D#".to_string(),
-            Note::E => "E".to_string(),
-            Note::F => "F".to_string(),
-            Note::Fs => "F#".to_string(),
-            Note::G => "G".to_string(),
-            Note::Gs => "G#".to_string(),
-            Note::A => "A".to_string(),
-            Note::As => "A#".to_string(),
-            Note::B => "B".to_string(),
+            Note::C => write!(fmt, "C"),
+            Note::Cs => write!(fmt, "C#"),
+            Note::D => write!(fmt, "D"),
+            Note::Ds => write!(fmt, "D#"),
+            Note::E => write!(fmt, "E"),
+            Note::F => write!(fmt, "F"),
+            Note::Fs => write!(fmt, "F#"),
+            Note::G => write!(fmt, "G"),
+            Note::Gs => write!(fmt, "G#"),
+            Note::A => write!(fmt, "A"),
+            Note::As => write!(fmt, "A#"),
+            Note::B => write!(fmt, "B"),
         }
     }
 }
 
-fn scale(root: Note, intervals: [Interval; 7]) -> Vec<String> {
+fn scale(root: Note, intervals: Vec<Interval>) -> Vec<String> {
+    let mut cloned_intervals = intervals.clone();
+    cloned_intervals.pop();
+
     let mut cycle_iterator = Note::iter().cycle();
+    let notes = vec![root];
 
     cycle_iterator.position( |note| note == root );
 
-    // Sorry, but... we should rewrite below
-    let notes = vec![root.to_s()];
-    let total_intervals = intervals.len();
-    let interval_list: &[Interval] = &intervals[..total_intervals-1];
-
-    return interval_list.iter().fold(notes, |mut acc, &interval| {
+    return cloned_intervals.iter().fold(notes, |mut acc, &interval| {
         let current_note = cycle_iterator
             .nth(interval as usize - 1)
-            .unwrap()
-            .to_s();
+            .unwrap();
 
         acc.push(current_note);
         acc
-    });
+    }).iter().map(|note| note.to_string()).collect();
 }
 
 #[allow(dead_code)]
@@ -66,7 +64,7 @@ fn major_scale(root: Note) -> Vec<String> {
         Interval::Whole,
         Interval::Whole,
         Interval::Half,
-    ]);
+    ].to_vec());
 }
 
 #[allow(dead_code)]
@@ -79,7 +77,7 @@ fn minor_scale(root: Note) -> Vec<String> {
         Interval::Half,
         Interval::Whole,
         Interval::Whole,
-    ]);
+    ].to_vec());
 }
 
 fn main() {}
