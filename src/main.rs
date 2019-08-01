@@ -35,18 +35,25 @@ impl Note {
     }
 }
 
-#[allow(dead_code)]
 fn scale(root: Note, intervals: [Interval; 7]) -> Vec<String> {
     let mut cycle_iterator = Note::iter().cycle();
 
     cycle_iterator.position( |note| note == root );
 
-    intervals.iter().map( |&interval| {
-        cycle_iterator
+    // Sorry, but... we should rewrite below
+    let notes = vec![root.to_s()];
+    let total_intervals = intervals.len();
+    let interval_list: &[Interval] = &intervals[..total_intervals-1];
+
+    return interval_list.iter().fold(notes, |mut acc, &interval| {
+        let current_note = cycle_iterator
             .nth(interval as usize - 1)
             .unwrap()
-            .to_s()
-    }).collect()
+            .to_s();
+
+        acc.push(current_note);
+        acc
+    });
 }
 
 #[allow(dead_code)]
@@ -100,7 +107,7 @@ mod tests {
     fn test_c_major_scale() {
         assert_eq!(
             major_scale(Note::C),
-            ["D", "E", "F", "G", "A", "B", "C"]
+            ["C", "D", "E", "F", "G", "A", "B"]
         );
     }
 
@@ -108,7 +115,7 @@ mod tests {
     fn test_b_minor_scale() {
         assert_eq!(
             minor_scale(Note::B),
-            ["C#", "D", "E", "F#", "G", "A", "B"]
+            ["B", "C#", "D", "E", "F#", "G", "A"]
         );
     }
 }
